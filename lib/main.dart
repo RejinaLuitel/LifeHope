@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:life_hope/presentation/screen/spalsh/splash.dart';
+import 'package:life_hope/presentation/screen/login/view/login_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,6 +10,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ValueNotifier<double> temperature = ValueNotifier(0.5);
     return MaterialApp(
       title: 'Fundraising and Donation App',
       debugShowCheckedModeBanner: false,
@@ -17,7 +18,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: SplashPage(),
+      home: Scaffold(
+        body: LoginPage(),
+      ),
     );
   }
 }

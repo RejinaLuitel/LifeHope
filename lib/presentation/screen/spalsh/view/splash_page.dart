@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:life_hope/presentation/resources/app_images.dart';
 import 'package:life_hope/presentation/resources/resources.dart';
-import 'package:life_hope/presentation/screen/login/login.dart';
-import 'package:life_hope/presentation/utils/constants/sizes.dart';
+
+import '../../login/view/login_page.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -13,68 +13,62 @@ class SplashPage extends StatefulWidget {
   State<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage> {
+class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 3), () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const LoginPage(),
-        ),
-      );
+    _controller = AnimationController(
+      duration: Duration(seconds: 2),
+      vsync: this, //vertical synchronization need to have singleTicker
+    )..repeat(reverse: false);
+
+    _animation = Tween<double>(begin: 500, end: 600).animate(_controller)
+      //Calls the listener every time the value of the animation changes
+      ..addListener(() {
+        setState(() {});
+      });
+
+    _controller.forward();
+
+    //The animation plays once instead of looping
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LoginPage(),
+          ),
+        );
+      }
     });
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
     return Scaffold(
       backgroundColor: Color(0xff6dbae6),
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        child: Stack(
-          alignment: AlignmentDirectional.center,
-          children: [
-            Container(
-              height: MediaQuery.of(context).size.height * 0.5,
-              width: double.maxFinite,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(
-                    AppImages.donationLogo,
-                  ),
-                ),
+      body: Stack(
+        alignment: AlignmentDirectional.center,
+        children: [
+          Container(
+            height: _animation.value,
+            width: _animation.value,
+            alignment: Alignment.center,
+            child: Center(
+              child: Image.asset(
+                AppImages.donationLogo,
               ),
-              child: Container(
-                alignment: Alignment.bottomCenter,
-                padding: EdgeInsets.only(bottom: AppSize.imageThumbSize * 0.5),
-                child: Text(
-                  "LIFE HOPE",
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: Color(0xffca1f4b),
-                        fontSize: 25,
-                        fontWeight: FontWeight.w800,
-                      ),
-                ),
-              ),
-
-              // Image.asset(
-              //   AppImages.donationLogo,
-              // ),
-              // Text(
-              //   "LIFE HOPE",
-              //   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              //         color: Color(0xffca1f4b),
-              //         fontSize: 25,
-              //         fontWeight: FontWeight.w800,
-              //       ),
-              // )
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
